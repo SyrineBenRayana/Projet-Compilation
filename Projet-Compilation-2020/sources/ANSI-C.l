@@ -16,67 +16,20 @@ IS                      (u|U|l|L)*
 %}
 
 %%
-"auto"                  { /* A completer */ }#
-"break"                 { /* A completer */ }#
-"case"                  { /* A completer */ }#
-"char"                  { /* A completer */ }#
-"const"                 { /* A completer */ }#
-"continue"              { /* A completer */ }#
-"default"               { /* A completer */ }#
-"do"                    { /* A completer */ }#
-"double"                { /* A completer */ }#
 "else"                  { return ELSE }
-"enum"                  { /* A completer */ }#
 "extern"                { return EXTERN }
-"float"                 { /* A completer */ }#
 "for"                   { return FOR }#
 "goto"                  { return GOTO }
 "if"                    { return IF }
 "int"                   { return INT }
-"long"                  { /* A completer */ }#
-"register"              { /* A completer */ }#
 "return"                { return RETURN }
-"short"                 { /* A completer */ }#
-"signed"                { /* A completer */ }#
 "sizeof"                { return SIZEOF }
-"static"                { /* A completer */ }#
 "struct"                { return STRUCT }
-"switch"                { /* A completer */ }#
-"typedef"               { /* A completer */ }
-"union"                 { /* A completer */ }
-"unsigned"              { /* A completer */ }#
 "void"                  { return VOID }
-"volatile"              { /* A completer */ }#
 "while"                 { return WHILE }
 
 {L}({L}|{D})*           { return IDENTIFIER }
 
-0[xX]{H}+{IS}?          { /* A completer */ }
-0{D}+{IS}?              { /* A completer */ }
-{D}+{IS}?               { /* A completer */ }
-L?'(\\.|[^\\'])+'       { /* A completer */ }
-
-{D}+{E}{FS}?            { /* A completer */ }
-{D}*"."{D}+({E})?{FS}?  { /* A completer */ }
-{D}+"."{D}*({E})?{FS}?  { /* A completer */ }
-
-L?\"(\\.|[^\\"])*\"     { /* A completer */ }#
-
-"..."                   { /* A completer */ }#
-">>="                   { /* A completer */ }#
-"<<="                   { /* A completer */ }#
-"+="                    { /* A completer */ }#
-"-="                    { /* A completer */ }#
-"*="                    { /* A completer */ }#
-"/="                    { /* A completer */ }#
-"%="                    { /* A completer */ }#
-"&="                    { /* A completer */ }#
-"^="                    { /* A completer */ }#
-"|="                    { /* A completer */ }#
-">>"                    { /* A completer */ }#
-"<<"                    { /* A completer */ }#
-"++"                    { /* A completer */ }#
-"--"                    { /* A completer */ }#
 "->"                    { return PTR_OP }
 "&&"                    { return AND_OP }
 "||"                    { return OR_OP }

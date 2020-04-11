@@ -10,10 +10,10 @@
 %%
 
 primary_expression
-        : IDENTIFIER
-        | CONSTANT
-        | '(' expression ')'
-        ;
+IDENTIFIER      : 
+        	| CONSTANT
+        	| '(' expression ')'
+        	;
 
 postfix_expression
         : primary_expression
@@ -22,7 +22,7 @@ postfix_expression
         | postfix_expression '.' IDENTIFIER
         | postfix_expression PTR_OP IDENTIFIER
         ;
-
+/*"->" { return PTR_OP }*/
 argument_expression_list
         : expression
         | argument_expression_list ',' expression
@@ -41,45 +41,55 @@ unary_operator
         ;
 
 multiplicative_expression
-        : unary_expression
-        | multiplicative_expression '*' unary_expression
-        | multiplicative_expression '/' unary_expression
-        ;
+unary_expression        : 
+        		| multiplicative_expression '*' unary_expression {$$ = $1 * $3; }
+        		| multiplicative_expression '/' unary_expression {$$ = $1 / $3; }
+        		;
 
 additive_expression
-        : multiplicative_expression
-        | additive_expression '+' multiplicative_expression
-        | additive_expression '-' multiplicative_expression
-        ;
+multiplicative_expression	: 
+        			| additive_expression '+' multiplicative_expression {$$ = $1 + $3; }
+        			| additive_expression '-' multiplicative_expression {$$ = $1 - $3; }
+        			;
 
 relational_expression
-        : additive_expression
-        | relational_expression '<' additive_expression
-        | relational_expression '>' additive_expression
-        | relational_expression LE_OP additive_expression
-        | relational_expression GE_OP additive_expression
-        ;
-
+additive_expression	: 
+        		| relational_expression '<' additive_expression {$$ = $1 < $3; }
+        		| relational_expression '>' additive_expression {$$ = $1 > $3; }
+        		| relational_expression LE_OP additive_expression {$$ = $1 <= $3; }
+        		| relational_expression GE_OP additive_expression {$$ = $1 >= $3; }
+        		;
+/*
+"<="                    { return LE_OP }
+">="                    { return GE_OP }
+*/
 equality_expression
-        : relational_expression
-        | equality_expression EQ_OP relational_expression
-        | equality_expression NE_OP relational_expression
-        ;
-
+relational_expression   :
+        		| equality_expression EQ_OP relational_expression {$$ = $1 == $3; }
+        		| equality_expression NE_OP relational_expression {$$ = $1 != $3; }
+        		;
+/*
+"=="                    { return EQ_OP }
+"!="                    { return NE_OP }
+*/
 logical_and_expression
-        : equality_expression
-        | logical_and_expression AND_OP equality_expression
-        ;
-
+equality_expression	: 
+        		| logical_and_expression AND_OP equality_expression {$$ = $1 && $3; }
+        		;
+/*
+"&&"                    { return AND_OP }
+*/
 logical_or_expression
-        : logical_and_expression
-        | logical_or_expression OR_OP logical_and_expression
-        ;
-
+logical_and_expression	: 
+        		| logical_or_expression OR_OP logical_and_expression {$$ = $1 || $3; }
+        		;
+/*
+"||"                    { return OR_OP }
+*/
 expression
-        : logical_or_expression
-        | unary_expression '=' expression
-        ;
+logical_or_expression	: 
+        		| unary_expression '=' expression {$$ = $1 = $3; }
+        		;
 
 declaration
         : declaration_specifiers declarator ';'
@@ -96,7 +106,9 @@ type_specifier
         | INT
         | struct_specifier
         ;
-
+/*
+"void"                  { return VOID }
+*/
 struct_specifier
         : STRUCT IDENTIFIER '{' struct_declaration_list '}'
         | STRUCT '{' struct_declaration_list '}'
