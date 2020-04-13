@@ -27,6 +27,7 @@ IS                      (u|U|l|L)*
 "struct"                { return STRUCT }
 "void"                  { return VOID }
 "while"                 { return WHILE }
+"malloc"		{ return MALLOC }
 
 {L}({L}|{D})*           { return IDENTIFIER }
 
