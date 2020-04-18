@@ -1,3 +1,27 @@
+%{
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#define TAILLE 103 /*nbr premier de preference */
+	symbole *table[TAILLE];
+%}
+typedef enum {INT, STRING} type_t;
+
+typedef struct _symbole{
+    char *nom;
+    double valeur;
+    struct _symbole *suivant;
+} symbole;
+
+%union {
+	double val;
+	char* name;
+}
+
+%type <entier> primary_expression
+%type <type> type_specifier
+
+
 %token IDENTIFIER CONSTANT SIZEOF
 %token PTR_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP
@@ -5,6 +29,11 @@
 %token INT VOID
 %token STRUCT 
 %token IF ELSE WHILE FOR RETURN
+
+%left '-' '+'
+%left '*' '/'
+%nonassoc neg
+
 
 %start program
 %%
@@ -75,8 +104,8 @@ declaration_specifiers	: EXTERN type_specifier {$$ = $1 $2;}
         		| type_specifier {$$ = $1;}
         		;
 
-type_specifier	: VOID {$$ = VOID;}
-        	| INT {$$ = INT;}
+type_specifier	: VOID {$$ = void;}
+        	| INT {$$ = int;}
         	| struct_specifier {$$ = $1;}
         	;
 
@@ -158,4 +187,63 @@ function_definition	: declaration_specifiers declarator compound_statement {$$ =
         		;
 
 %%
+typedef enum {INT, STRING} type_t;
+typedef struct _symbole{
+    char *nom;
+    type_t type;
+    int taille;
+    int position;
+    double valeur;
+    struct _symbole *suivant;
+} symbole;
 
+symbole_t * ajouter (char* nom);
+symbole_t * rechercher (char * nom);
+
+int yyerror( char *s ) {
+	fprintf( stderr, "%s\n", s );
+	exit(1);
+}int main() {
+	while (1)
+		yyparse();
+}
+
+symbole *table[TAILLE];
+
+int hash(char *nom){
+    int i, r;
+    int taille = strlen(nom);
+    r = 0;
+    for( i = 0; i < taille; i++)
+        r = ((r << 8)+nom[i])%TAILLE;
+    return r;
+}
+
+void table_reset(){
+    int i ;
+    for(i = 0; i < TAILLE; i++)
+        table[i] = NULL;
+}
+
+
+
+symbole * inserer( char *nom ) {
+  int h;
+  symbole *s;
+  symbole *precedent;
+  
+
+  h = hash(nom);
+  s = table[h];
+  precedent = NULL;
+
+  while ( s != NULL ) {
+    if ( strcmp( s->nom, nom ) == 0 )
+      return s;
+    precedent = s;
+    s = s->suivant;
+  }
+  if ( precedent == NULL ) {
+    table[h] = (symbole *) malloc(sizeof(symbole));
+    s = table[h];
+  }
